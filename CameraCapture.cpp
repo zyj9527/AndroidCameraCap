@@ -215,10 +215,21 @@ namespace android {
     bool CameraCapture::threadLoop() {
         ALOGI("%s\n", __FUNCTION__);
 #if !CAMERA_TEST
-        return v4l2Loop();
+        int r = v4l2Loop();
 #else
-        return testLoop();
+        int r = testLoop();
 #endif
+        // No need to force exit anymore
+        property_set(EXIT_PROP_NAME, "0");
+
+        eglMakeCurrent(mDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        eglDestroyContext(mDisplay, mContext);
+        eglDestroySurface(mDisplay, mSurface);
+        mFlingerSurface.clear();
+        mFlingerSurfaceControl.clear();
+        eglTerminate(mDisplay);
+        IPCThreadState::self()->stopProcess();
+        return r;
     }
 
     void CameraCapture::checkExit() {
@@ -339,7 +350,7 @@ namespace android {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         mCamWidth = 720;
         mCamHeight = 480;
-        while(1){
+        while (1) {
             native_window_set_buffers_geometry(mANW.get(), mCamWidth, mCamHeight, HAL_PIXEL_FORMAT_YV12);
             native_window_set_usage(mANW.get(), GRALLOC_USAGE_SW_READ_OFTEN | GRALLOC_USAGE_SW_WRITE_OFTEN);
             ANativeWindowBuffer *anb = NULL;
@@ -355,7 +366,7 @@ namespace android {
                 ALOGE("GRALLOC_USAGE_SW_WRITE_OFTEN is NULL");
                 continue;
             }
-            memset(img,index++&0xff,mCamHeight*mCamWidth*2);
+            memset(img, index++ & 0xff, mCamHeight * mCamWidth * 2);
             buf->unlock();
             mANW->queueBuffer(mANW.get(), buf->getNativeBuffer(), -1);
             mST->updateTexImage();
@@ -369,7 +380,11 @@ namespace android {
                 ALOGE("eglSwapBuffers failed");
                 break;
             }
-            usleep(1000*30);
+            usleep(1000 * 30);
+            checkExit();
+            if (exitPending()) {
+                break;
+            }
         }
         return false;
     }
