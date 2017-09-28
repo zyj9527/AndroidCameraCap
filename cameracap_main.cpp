@@ -19,15 +19,9 @@
 #include <cutils/properties.h>
 
 #include <binder/IPCThreadState.h>
-#include <binder/ProcessState.h>
-#include <binder/IServiceManager.h>
-
-#include <utils/Log.h>
-#include <utils/threads.h>
 
 #if defined(HAVE_PTHREADS)
 
-# include <pthread.h>
 # include <sys/resource.h>
 
 #endif
@@ -39,7 +33,7 @@ using namespace android;
 // ---------------------------------------------------------------------------
 
 int main(int argc, char **argv) {
-    ALOGV("main+\r\n");
+    ALOGV("starting\n");
 #if defined(HAVE_PTHREADS)
     setpriority(PRIO_PROCESS, 0, ANDROID_PRIORITY_DISPLAY);
 #endif
@@ -57,6 +51,6 @@ int main(int argc, char **argv) {
         IPCThreadState::self()->joinThreadPool();
 
     }
-    ALOGV("main-\r\n");
+    ALOGV("stoped\r\n");
     return 0;
 }

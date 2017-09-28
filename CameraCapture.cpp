@@ -18,22 +18,14 @@
 
 #include <stdint.h>
 #include <sys/types.h>
-#include <math.h>
 #include <fcntl.h>
-#include <utils/misc.h>
-#include <signal.h>
 #include <poll.h>
 #include <cutils/properties.h>
 
 #include <androidfw/AssetManager.h>
 #include <binder/IPCThreadState.h>
-#include <utils/Atomic.h>
-#include <utils/Errors.h>
-#include <utils/Log.h>
-#include <utils/threads.h>
 
 #include <ui/PixelFormat.h>
-#include <ui/Rect.h>
 #include <ui/Region.h>
 #include <ui/DisplayInfo.h>
 #include <ui/FramebufferNativeWindow.h>
@@ -43,14 +35,9 @@
 #include <gui/SurfaceComposerClient.h>
 
 #include <GLES/gl.h>
-#include <GLES/glext.h>
-#include <EGL/eglext.h>
 
 #include "EGLUtils.h"
 #include "CameraCapture.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 
 #define EXIT_PROP_NAME "service.bootanim.exit"

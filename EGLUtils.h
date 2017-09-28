@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-
+#include <math.h>
 #include <system/window.h>
 #include <utils/Errors.h>
 #include <utils/Log.h>

@@ -18,21 +18,11 @@
 
 #include <string.h>
 #include <unistd.h>
-#include <time.h>
-#include <dlfcn.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <linux/time.h>
 #include <linux/videodev2.h>
-#include <linux/mxcfb.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
-#include <sys/stat.h>
-#include <utils/threads.h>
-#include <dirent.h>
-#include <utils/Errors.h>
-#include <utils/Log.h>
 #include <poll.h>
 
 #include "CameraIn.h"
