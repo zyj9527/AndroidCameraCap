@@ -42,7 +42,7 @@
 
 #define EXIT_PROP_NAME "service.bootanim.exit"
 
-#define CAMERA_TEST 0
+#define CAMERA_TEST 1
 const char CamVertexShader[] =
         "uniform mat4 model;\n"
                 "uniform mat4 projection;\n"
@@ -361,8 +361,8 @@ namespace android {
             mST->updateTexImage();
 
             glClear(GL_COLOR_BUFFER_BIT);
-            Renderer->DrawSprite(ResourceManager::GetTexture("camera"), glm::vec2(50, 5),
-                                 glm::vec2(mCamWidth, mCamHeight), 0);
+            Renderer->DrawSprite(ResourceManager::GetTexture("camera"), glm::vec2(0, 0),
+                                 glm::vec2(mWidth, mHeight), 0);
 
             EGLBoolean res = eglSwapBuffers(mDisplay, mSurface);
             if (res == EGL_FALSE) {
