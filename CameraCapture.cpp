@@ -67,12 +67,14 @@ namespace android {
 // ---------------------------------------------------------------------------
 
     CameraCapture::CameraCapture() : Thread(false) {
+        ALOGI("%s\n", __FUNCTION__);
         mSession = new SurfaceComposerClient();
-        mCam = NULL;
+        mCam = new CameraIn();
         Renderer = NULL;
     }
 
     CameraCapture::~CameraCapture() {
+        ALOGI("%s\n", __FUNCTION__);
         ResourceManager::Clear();
 
         if (mCam) {
@@ -86,6 +88,7 @@ namespace android {
     }
 
     void CameraCapture::onFirstRef() {
+        ALOGI("%s\n", __FUNCTION__);
         status_t err = mSession->linkToComposerDeath(this);
         if (err == NO_ERROR) {
             run("CameraCapture", PRIORITY_DISPLAY);
@@ -97,12 +100,13 @@ namespace android {
     }
 
     void CameraCapture::binderDied(const wp<IBinder> &who) {
+        ALOGE("%s\n", __FUNCTION__);
         kill(getpid(), SIGKILL);
         requestExit();
     }
 
     status_t CameraCapture::readyToRun() {
-        ALOGV("readyToRun+\r\n");
+        ALOGI("%s\n", __FUNCTION__);
         mAssets.addDefaultAssets();
 
         sp<IBinder> dtoken(SurfaceComposerClient::getBuiltInDisplay(ISurfaceComposer::eDisplayIdMain));
@@ -168,7 +172,7 @@ namespace android {
         mFlingerSurfaceControl = control;
         mFlingerSurface = s;
 
-        mCam = new CameraIn();
+
         if (mCam == NULL)
             return -1;
         if (mCam->openDev("/dev/video0") != 0)
@@ -185,14 +189,18 @@ namespace android {
     }
 
     int CameraCapture::setupEGL() {
+        //Create Orthographic Projection
         glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(mWidth), static_cast<GLfloat>(mHeight), 0.0f,
                                           -1.0f, 1.0f);
+        //Create ResourceManager with Shader and set parameters
         ResourceManager::LoadShader(CamVertexShader, CamFragmentShader, "camera");
         ResourceManager::GetShader("camera").Use().SetInteger("image", 0);
         ResourceManager::GetShader("camera").SetMatrix4("projection", projection);
+        //Create a Texture with name 'camera'
         ResourceManager::LoadTextureExternal("camera");
         Renderer = new CamRenderer(ResourceManager::GetShader("camera"));
 
+        //Create Android Surface with  'camera' Texture to drawpicture
         mBQ = new BufferQueue();
         mST = new GLConsumer(mBQ, ResourceManager::GetTexture("camera").ID);
         mSTC = new Surface(mBQ);
@@ -202,7 +210,7 @@ namespace android {
     }
 
     bool CameraCapture::threadLoop() {
-        ALOGV("threadLoop()+\r\n");
+        ALOGI("%s\n", __FUNCTION__);
         if ((mCam == NULL) || (mCam->startCapture() != 0))
             return false;
 
@@ -296,6 +304,7 @@ namespace android {
         property_get(EXIT_PROP_NAME, value, "0");
         int exitnow = atoi(value);
         if (exitnow) {
+            ALOGI("%s:%d\n", EXIT_PROP_NAME, exitnow);
             requestExit();
         }
     }

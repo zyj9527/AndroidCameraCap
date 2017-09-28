@@ -51,10 +51,10 @@ namespace android {
     }
 
     int CameraIn::openDev(char *path) {
-        printf("openDev(%s)+\r\n", path);
+        ALOGI("%s:path=%s\n", __FUNCTION__, path);
         mFd = open(path, O_RDWR, 0);
         if (mFd < 0) {
-            printf("err 1\r\n");
+            ALOGE("open dev %s failed\n", path);
             return -1;
         }
 
@@ -62,44 +62,44 @@ namespace android {
         int err;
         err = ioctl(mFd, VIDIOC_QUERYCAP, &cap);
         if (err < 0) {
-            printf("err 2\r\n");
+            ALOGE("VIDIOC_QUERYCAP failed\n");
             return -1;
         }
 
         if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
-            printf("err 3\r\n");
+            ALOGE("V4L2_CAP_VIDEO_CAPTURE failed\n");
             return -1;
         }
 
         if (!(cap.capabilities & V4L2_CAP_STREAMING)) {
-            printf("err 4\r\n");
+            ALOGE("V4L2_CAP_STREAMING failed\n");
             return -1;
         }
 
         struct v4l2_dbg_chip_ident chip;
         err = ioctl(mFd, VIDIOC_DBG_G_CHIP_IDENT, &chip);
         if (err != 0) {
-            printf("err 5\r\n");
+            ALOGE("VIDIOC_DBG_G_CHIP_IDENT failed\n");
             return -1;
         }
 
 #if 0
-        struct v4l2_fmtdesc vid_fmtdesc;
-        int iindex = 0;
-        while (err == 0)
-        {
-            vid_fmtdesc.index = iindex;
-            vid_fmtdesc.type  = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-            err               = ioctl(mFd, VIDIOC_ENUM_FMT, &vid_fmtdesc);
-            printf("index:%d,ret:%d, format:%c%c%c%c\r\n", iindex, err,
-                         vid_fmtdesc.pixelformat & 0xFF,
-                         (vid_fmtdesc.pixelformat >> 8) & 0xFF,
-                         (vid_fmtdesc.pixelformat >> 16) & 0xFF,
-                         (vid_fmtdesc.pixelformat >> 24) & 0xFF);
-        }
+            struct v4l2_fmtdesc vid_fmtdesc;
+            int iindex = 0;
+            while (err == 0)
+            {
+                vid_fmtdesc.index = iindex;
+                vid_fmtdesc.type  = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+                err               = ioctl(mFd, VIDIOC_ENUM_FMT, &vid_fmtdesc);
+                printf("index:%d,ret:%d, format:%c%c%c%c\r\n", iindex, err,
+                             vid_fmtdesc.pixelformat & 0xFF,
+                             (vid_fmtdesc.pixelformat >> 8) & 0xFF,
+                             (vid_fmtdesc.pixelformat >> 16) & 0xFF,
+                             (vid_fmtdesc.pixelformat >> 24) & 0xFF);
+            }
 #endif
 
-        //Log.v("Camera chip %s\r\n", chip.match.name);
+        ALOGI("Camera chip %s\n", chip.match.name);
 #if 0
         int g_input = 1;
         err = ioctl(mFd, VIDIOC_S_INPUT, &g_input);
@@ -110,8 +110,10 @@ namespace android {
         int maxWait = 6;
         do {
             err = ioctl(mFd, VIDIOC_G_STD, &mStd);
-            if (err < 0)
+            if (err < 0) {
+                ALOGE("VIDIOC_G_STD failed %d\n", 6 - maxWait);
                 sleep(1);
+            }
             maxWait--;
         } while ((err != 0) || (maxWait <= 0));
 #if 0
@@ -124,13 +126,12 @@ namespace android {
 
         err = ioctl(mFd, VIDIOC_S_STD, &mStd);
         if (err < 0) {
-            printf("err 6\r\n");
+            ALOGE("VIDIOC_S_STD failed\n");
             return -1;
         }
 
         int index = 0;
         char TmpStr[20];
-        int previewCnt = 0, pictureCnt = 0;
         struct v4l2_frmsizeenum vid_frmsize;
         struct v4l2_frmivalenum vid_frmval;
         int max_area = 0;
@@ -140,10 +141,10 @@ namespace android {
             memset(TmpStr, 0, 20);
             memset(&vid_frmsize, 0, sizeof(struct v4l2_frmsizeenum));
             vid_frmsize.index = index++;
-            vid_frmsize.pixel_format = CAPTURE_PIX_FORMAT;//V4L2_PIX_FMT_UYVY;//v4l2_fourcc('N', 'V', '1', '2');
+            vid_frmsize.pixel_format = CAPTURE_PIX_FORMAT;
             err = ioctl(mFd, VIDIOC_ENUM_FRAMESIZES, &vid_frmsize);
             if (err == 0) {
-                printf("enum frame size w:%d, h:%d\r\n", vid_frmsize.discrete.width, vid_frmsize.discrete.height);
+                ALOGI("enum frame size w:%d, h:%d\n", vid_frmsize.discrete.width, vid_frmsize.discrete.height);
                 memset(&vid_frmval, 0, sizeof(struct v4l2_frmivalenum));
                 vid_frmval.index = 0;
                 vid_frmval.pixel_format = vid_frmsize.pixel_format;
@@ -152,8 +153,8 @@ namespace android {
 
                 err = ioctl(mFd, VIDIOC_ENUM_FRAMEINTERVALS, &vid_frmval);
                 if (err == 0) {
-                    printf("vid_frmval denominator:%d, numeraton:%d\r\n", vid_frmval.discrete.denominator,
-                           vid_frmval.discrete.numerator);
+                    ALOGI("vid_frmval denominator:%d, numeraton:%d\r\n", vid_frmval.discrete.denominator,
+                          vid_frmval.discrete.numerator);
                     if ((vid_frmval.discrete.denominator / vid_frmval.discrete.numerator) >= 15) {
                         int area = vid_frmsize.discrete.width * vid_frmsize.discrete.height;
                         if (area > max_area) {
@@ -179,16 +180,16 @@ namespace android {
             }
         } // end while
         if ((max_width == 0) || (max_height == 0) || (max_deno == 0) || (max_numer == 0)) {
-            printf("err 8\r\n");
+            ALOGE("err width height deno and nmber\n");
             return -1;
         }
 
-        printf("We us %d x %d %f fps\r\n", max_width, max_height, (float) max_deno / max_numer);
+        ALOGI("We us %d x %d %f fps\n", max_width, max_height, (float) max_deno / max_numer);
 
         int input = 1;
         err = ioctl(mFd, VIDIOC_S_INPUT, &input);
         if (err < 0) {
-            printf("err 9\r\n");
+            ALOGE("VIDIOC_S_INPUT filed\n");
             return -1;
         }
 
@@ -200,7 +201,7 @@ namespace android {
         param.parm.capture.capturemode = 0;
         err = ioctl(mFd, VIDIOC_S_PARM, &param);
         if (err < 0) {
-            printf("err 10\r\n");
+            printf("VIDIOC_S_PARM failed\r\n");
             return -1;
         }
 
@@ -219,19 +220,18 @@ namespace android {
             int c_stride = (stride / 2 + 15) / 16 * 16;
             mFormat.fmt.pix.bytesperline = stride;
             mFormat.fmt.pix.sizeimage = stride * max_height + c_stride * max_height;
-            printf("Special handling for YV12 on Stride %d, size %d", mFormat.fmt.pix.bytesperline,
-                   mFormat.fmt.pix.sizeimage);
+            ALOGI("Special handling for YV12 on Stride %d, size %d\n", mFormat.fmt.pix.bytesperline,
+                  mFormat.fmt.pix.sizeimage);
         }
 
         err = ioctl(mFd, VIDIOC_S_FMT, &mFormat);
         if (err < 0) {
-            printf("err 11\r\n");
+            ALOGE("VIDIOC_S_FMT failed\r\n");
             return -1;
         }
 
         mWidth = max_width;
         mHeight = max_height;
-        printf("openDev(%s)-\r\n", path);
         return 0;
     }
 
