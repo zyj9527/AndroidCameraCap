@@ -335,6 +335,42 @@ namespace android {
 
     bool CameraCapture::testLoop() {
         ALOGI("%s\n", __FUNCTION__);
+        int index = 0, err = 0;
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        mCamWidth = 720;
+        mCamHeight = 480;
+        while(1){
+            native_window_set_buffers_geometry(mANW.get(), mCamWidth, mCamHeight, HAL_PIXEL_FORMAT_YV12);
+            native_window_set_usage(mANW.get(), GRALLOC_USAGE_SW_READ_OFTEN | GRALLOC_USAGE_SW_WRITE_OFTEN);
+            ANativeWindowBuffer *anb = NULL;
+            err = native_window_dequeue_buffer_and_wait(mANW.get(), &anb);
+            if ((err != NO_ERROR) || (anb == NULL)) {
+                ALOGE("native_window_dequeue_buffer_and_wait failed");
+                continue;
+            }
+            sp<GraphicBuffer> buf(new GraphicBuffer(anb, false));
+            uint8_t *img = NULL;
+            buf->lock(GRALLOC_USAGE_SW_WRITE_OFTEN, (void **) (&img));
+            if (img == NULL) {
+                ALOGE("GRALLOC_USAGE_SW_WRITE_OFTEN is NULL");
+                continue;
+            }
+            memset(img,index++&0xff,mCamHeight*mCamWidth*2);
+            buf->unlock();
+            mANW->queueBuffer(mANW.get(), buf->getNativeBuffer(), -1);
+            mST->updateTexImage();
+
+            glClear(GL_COLOR_BUFFER_BIT);
+            Renderer->DrawSprite(ResourceManager::GetTexture("camera"), glm::vec2(50, 5),
+                                 glm::vec2(mCamWidth, mCamHeight), 0);
+
+            EGLBoolean res = eglSwapBuffers(mDisplay, mSurface);
+            if (res == EGL_FALSE) {
+                ALOGE("eglSwapBuffers failed");
+                break;
+            }
+            usleep(1000*30);
+        }
         return false;
     }
 
