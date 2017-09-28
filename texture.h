@@ -4,10 +4,9 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
-class Texture2D
-{
+class Texture2D {
 public:
-	GLenum Target;
+    GLenum Target;
     GLuint ID;
     GLuint Width, Height; // Width and height of loaded image in pixels
     GLuint Internal_Format; // Format of texture object
@@ -17,9 +16,13 @@ public:
     GLuint Filter_Min; // Filtering mode if texture pixels < screen pixels
     GLuint Filter_Max; // Filtering mode if texture pixels > screen pixels
     Texture2D();
+
     Texture2D(GLenum target);
-    void Generate(GLuint width, GLuint height, unsigned char* data);
+
+    void Generate(GLuint width, GLuint height, unsigned char *data);
+
     void Generate();
+
     void Bind() const;
 };
 

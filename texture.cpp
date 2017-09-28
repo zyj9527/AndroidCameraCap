@@ -3,20 +3,19 @@
 #include "texture.h"
 
 Texture2D::Texture2D()
-    : Target(GL_TEXTURE_2D), Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR)
-{
+        : Target(GL_TEXTURE_2D), Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT),
+          Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR) {
     glGenTextures(1, &this->ID);
 }
 
 Texture2D::Texture2D(GLenum target)
-    : Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR)
-{
-    this->Target = target;	
+        : Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT),
+          Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR) {
+    this->Target = target;
     glGenTextures(1, &this->ID);
 }
 
-void Texture2D::Generate(GLuint width, GLuint height, unsigned char* data)
-{
+void Texture2D::Generate(GLuint width, GLuint height, unsigned char *data) {
     this->Width = width;
     this->Height = height;
     // Create Texture
@@ -31,8 +30,7 @@ void Texture2D::Generate(GLuint width, GLuint height, unsigned char* data)
     glBindTexture(Target, 0);
 }
 
-void Texture2D::Generate()
-{
+void Texture2D::Generate() {
     glBindTexture(Target, this->ID);
 
     glTexParameterf(Target, GL_TEXTURE_WRAP_S, this->Wrap_S);
@@ -42,7 +40,6 @@ void Texture2D::Generate()
     glBindTexture(Target, 0);
 }
 
-void Texture2D::Bind() const
-{
+void Texture2D::Bind() const {
     glBindTexture(Target, this->ID);
 }

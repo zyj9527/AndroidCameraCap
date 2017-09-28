@@ -43,71 +43,76 @@ class SkBitmap;
 
 namespace android {
 
-class Surface;
-class SurfaceComposerClient;
-class SurfaceControl;
+    class Surface;
 
-#define TEX_TARGET		123
+    class SurfaceComposerClient;
+
+    class SurfaceControl;
+
+#define TEX_TARGET        123
 // ---------------------------------------------------------------------------
 
-class CameraCapture : public Thread, public IBinder::DeathRecipient
-{
-public:
-                CameraCapture();
-    virtual     ~CameraCapture();
+    class CameraCapture : public Thread, public IBinder::DeathRecipient {
+    public:
+        CameraCapture();
 
-    sp<SurfaceComposerClient> session() const;
+        virtual     ~CameraCapture();
 
-private:
-    virtual bool        threadLoop();
-    virtual status_t    readyToRun();
-    virtual void        onFirstRef();
-    virtual void        binderDied(const wp<IBinder>& who);
+        sp<SurfaceComposerClient> session() const;
 
-    void checkExit();
-    
-    int setupEGL();
+    private:
+        virtual bool threadLoop();
 
-    sp<SurfaceComposerClient> mSession;
-    AssetManager mAssets;
+        virtual status_t readyToRun();
 
-    int         mWidth;
-    int         mHeight;
-    float_t		mRatio;
-    EGLDisplay  mDisplay;
-    EGLDisplay  mContext;
-    EGLDisplay  mSurface;
-    sp<SurfaceControl> mFlingerSurfaceControl;
-    sp<Surface> mFlingerSurface;
-    bool        mAndroidAnimation;
-    
-    sp<BufferQueue> mBQ;
-	sp<GLConsumer> mST;
-	sp<Surface> mSTC;
-    sp<ANativeWindow> mANW;
+        virtual void onFirstRef();
 
-	GLuint mTextureID;
-    GLuint mProgram;
-    GLint muMVPMatrixHandle;
-    GLint muSTMatrixHandle;
-    GLint muCRatioHandle;
-    GLint maPositionHandle;
-    GLint maTextureHandle;
-    
-	float mMVPMatrix[16];
-    float mProjMatrix[16];
-    float mMMatrix[16];
-    float mVMatrix[16];
-    float mSTMatrix[16];
-    float mPos[3];
-    
-    CameraIn *mCam;
-    int mCamWidth;
-	int mCamHeight;
-	float mCamRatio;
-	
-	CamRenderer *Renderer;
-};
+        virtual void binderDied(const wp<IBinder> &who);
+
+        void checkExit();
+
+        int setupEGL();
+
+        sp<SurfaceComposerClient> mSession;
+        AssetManager mAssets;
+
+        int mWidth;
+        int mHeight;
+        float_t mRatio;
+        EGLDisplay mDisplay;
+        EGLDisplay mContext;
+        EGLDisplay mSurface;
+        sp<SurfaceControl> mFlingerSurfaceControl;
+        sp<Surface> mFlingerSurface;
+        bool mAndroidAnimation;
+
+        sp<BufferQueue> mBQ;
+        sp<GLConsumer> mST;
+        sp<Surface> mSTC;
+        sp<ANativeWindow> mANW;
+
+        GLuint mTextureID;
+        GLuint mProgram;
+        GLint muMVPMatrixHandle;
+        GLint muSTMatrixHandle;
+        GLint muCRatioHandle;
+        GLint maPositionHandle;
+        GLint maTextureHandle;
+
+        float mMVPMatrix[16];
+        float mProjMatrix[16];
+        float mMMatrix[16];
+        float mVMatrix[16];
+        float mSTMatrix[16];
+        float mPos[3];
+
+        CameraIn *mCam;
+        int mCamWidth;
+        int mCamHeight;
+        float mCamRatio;
+
+        CamRenderer *Renderer;
+    };
 
 // ---------------------------------------------------------------------------
 

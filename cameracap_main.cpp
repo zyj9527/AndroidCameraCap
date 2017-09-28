@@ -26,8 +26,10 @@
 #include <utils/threads.h>
 
 #if defined(HAVE_PTHREADS)
+
 # include <pthread.h>
 # include <sys/resource.h>
+
 #endif
 
 #include "CameraCapture.h"
@@ -36,9 +38,8 @@ using namespace android;
 
 // ---------------------------------------------------------------------------
 
-int main(int argc, char** argv)
-{
-	ALOGV("main+\r\n");
+int main(int argc, char **argv) {
+    ALOGV("main+\r\n");
 #if defined(HAVE_PTHREADS)
     setpriority(PRIO_PROCESS, 0, ANDROID_PRIORITY_DISPLAY);
 #endif
@@ -46,7 +47,7 @@ int main(int argc, char** argv)
     char value[PROPERTY_VALUE_MAX];
     property_get("debug.sf.nocameracapture", value, "0");
     int noCameraCapture = atoi(value);
-    ALOGI_IF(noCameraCapture,  "camera capture disabled");
+    ALOGI_IF(noCameraCapture, "camera capture disabled");
     if (!noCameraCapture) {
 
         sp<ProcessState> proc(ProcessState::self());

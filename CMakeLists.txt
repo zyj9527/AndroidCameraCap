@@ -5,9 +5,9 @@ set(PRODUCT nav132)
 set(TARGET_OUT ${TOPDIR}/out/target/product/${PRODUCT})
 set(CMAKE_SYSTEM Linux)
 set(CMAKE_SYSTEM_VERSION 1)
-set(CROSS_COMPILE  ${TOPDIR}/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/arm-eabi-)
+set(CROSS_COMPILE ${TOPDIR}/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/arm-eabi-)
 set(CMAKE_C_COMPILER ${CROSS_COMPILE}gcc)
-set(CMAKE_CXX_COMPILER  ${CROSS_COMPILE}g++)
+set(CMAKE_CXX_COMPILER ${CROSS_COMPILE}g++)
 set(CMAKE_FIND_ROOT_PATH ${TARGET_OUT}/obj)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -71,7 +71,7 @@ add_definitions(-DFORTIFY_SOURCE=2 -DANDROID -DOMX_SW_CODEC -DNDEBUG -D__ANDROID
 #external defination
 add_definitions(-DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES -DBUILD_FOR_ANDROID -DGLM_FORCE_CXX98)
 
-set(CMAKE_CXX_FLAGS  "-c  -fno-exceptions -Wno-multichar -msoft-float -fpic -fPIE -ffunction-sections -fdata-sections -funwind-tables -fstack-protector -Wa,--noexecstack -Werror=format-security -fno-short-enums -march=armv7-a -mfloat-abi=softfp -mfpu=neon -include /home/citos-android/data/myandroid/build/core/combo/include/arch/linux-arm/AndroidConfig.h -I ${TOPDIR}/build/core/combo/include/arch/linux-arm/ -Wno-unused-but-set-variable -fno-builtin-sin -fno-strict-volatile-bitfields -Wno-psabi -mthumb-interwork  -fmessage-length=0 -W -Wall -Wno-unused -Winit-self -Wpointer-arith -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -g -Wstrict-aliasing=2 -fgcse-after-reload -frerun-cse-after-loop -frename-registers -DNDEBUG -UDEBUG -fvisibility-inlines-hidden -fmessage-length=0 -W -Wall -Wno-unused -Winit-self -Wpointer-arith -Wsign-promo -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -UDEBUG -mthumb -Os -fomit-frame-pointer -fno-strict-aliasing  -fno-rtti -MD -MF")
+set(CMAKE_CXX_FLAGS "-c  -fno-exceptions -Wno-multichar -msoft-float -fpic -fPIE -ffunction-sections -fdata-sections -funwind-tables -fstack-protector -Wa,--noexecstack -Werror=format-security -fno-short-enums -march=armv7-a -mfloat-abi=softfp -mfpu=neon -include /home/citos-android/data/myandroid/build/core/combo/include/arch/linux-arm/AndroidConfig.h -I ${TOPDIR}/build/core/combo/include/arch/linux-arm/ -Wno-unused-but-set-variable -fno-builtin-sin -fno-strict-volatile-bitfields -Wno-psabi -mthumb-interwork  -fmessage-length=0 -W -Wall -Wno-unused -Winit-self -Wpointer-arith -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -g -Wstrict-aliasing=2 -fgcse-after-reload -frerun-cse-after-loop -frename-registers -DNDEBUG -UDEBUG -fvisibility-inlines-hidden -fmessage-length=0 -W -Wall -Wno-unused -Winit-self -Wpointer-arith -Wsign-promo -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -UDEBUG -mthumb -Os -fomit-frame-pointer -fno-strict-aliasing  -fno-rtti -MD -MF")
 
 aux_source_directory(. SOURCE_FILES)
 
