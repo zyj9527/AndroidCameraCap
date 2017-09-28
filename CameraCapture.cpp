@@ -42,6 +42,7 @@
 
 #define EXIT_PROP_NAME "service.bootanim.exit"
 
+#define CAMERA_TEST 0
 const char CamVertexShader[] =
         "uniform mat4 model;\n"
                 "uniform mat4 projection;\n"
@@ -69,7 +70,11 @@ namespace android {
     CameraCapture::CameraCapture() : Thread(false) {
         ALOGI("%s\n", __FUNCTION__);
         mSession = new SurfaceComposerClient();
+#if !CAMERA_TEST
         mCam = new CameraIn();
+#else
+        mCam = NULL;
+#endif
         Renderer = NULL;
     }
 
@@ -171,20 +176,18 @@ namespace android {
         mHeight = h;
         mFlingerSurfaceControl = control;
         mFlingerSurface = s;
-
-
-        if (mCam == NULL)
+#if !CAMERA_TEST
+        if (v4l2Init() != 0) {
             return -1;
-        if (mCam->openDev("/dev/video0") != 0)
+        }
+#else
+        if (testInit() != 0) {
             return -1;
-
-        if (mCam->setupBuffer() != 0)
-            return -1;
-
+        }
+#endif
         if (setupEGL() != 0)
             return -1;
 
-        ALOGV("readyToRun-\r\n");
         return NO_ERROR;
     }
 
@@ -210,6 +213,37 @@ namespace android {
     }
 
     bool CameraCapture::threadLoop() {
+        ALOGI("%s\n", __FUNCTION__);
+#if !CAMERA_TEST
+        return v4l2Loop();
+#else
+        return testLoop();
+#endif
+    }
+
+    void CameraCapture::checkExit() {
+        char value[PROPERTY_VALUE_MAX];
+        property_get(EXIT_PROP_NAME, value, "0");
+        int exitnow = atoi(value);
+        if (exitnow) {
+            ALOGI("%s:%d\n", EXIT_PROP_NAME, exitnow);
+            requestExit();
+        }
+    }
+
+    int CameraCapture::v4l2Init() {
+        ALOGI("%s\n", __FUNCTION__);
+        if (mCam == NULL)
+            return -1;
+        if (mCam->openDev("/dev/video0") != 0)
+            return -1;
+
+        if (mCam->setupBuffer() != 0)
+            return -1;
+        return 0;
+    }
+
+    bool CameraCapture::v4l2Loop() {
         ALOGI("%s\n", __FUNCTION__);
         if ((mCam == NULL) || (mCam->startCapture() != 0))
             return false;
@@ -291,22 +325,17 @@ namespace android {
         mCam->stopCapture();
         delete mCam;
         mCam = NULL;
+        return false;
+    }
 
-        ResourceManager::Clear();
-
-        ALOGV("threadLoop()-\r\n");
-        //printf("threadLoop()-\r\n");
+    int CameraCapture::testInit() {
+        ALOGI("%s\n", __FUNCTION__);
         return 0;
     }
 
-    void CameraCapture::checkExit() {
-        char value[PROPERTY_VALUE_MAX];
-        property_get(EXIT_PROP_NAME, value, "0");
-        int exitnow = atoi(value);
-        if (exitnow) {
-            ALOGI("%s:%d\n", EXIT_PROP_NAME, exitnow);
-            requestExit();
-        }
+    bool CameraCapture::testLoop() {
+        ALOGI("%s\n", __FUNCTION__);
+        return false;
     }
 
 }; // namespace android

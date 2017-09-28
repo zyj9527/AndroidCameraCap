@@ -32,7 +32,7 @@ namespace android {
 // ---------------------------------------------------------------------------
 
     CameraIn::CameraIn() {
-        printf("CameraIn()\r\n");
+        ALOGI("%s\n",__FUNCTION__);
         mFd = -1;
         mStd = 0;
         mWidth = 0;
@@ -43,7 +43,7 @@ namespace android {
     }
 
     CameraIn::~CameraIn() {
-        printf("~CameraIn()\r\n");
+        ALOGI("%s\n",__FUNCTION__);
         if (mFd >= 0) {
             close(mFd);
             mFd = -1;
@@ -236,6 +236,7 @@ namespace android {
     }
 
     int CameraIn::setupBuffer() {
+        ALOGI("%s\n",__FUNCTION__);
         struct v4l2_requestbuffers bufreq;
         bufreq.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         bufreq.memory = V4L2_MEMORY_MMAP;
@@ -264,6 +265,7 @@ namespace android {
     }
 
     int CameraIn::startCapture() {
+        ALOGI("%s\n",__FUNCTION__);
         int i;
         struct v4l2_buffer buf;
 
@@ -287,6 +289,7 @@ namespace android {
     }
 
     int CameraIn::stopCapture() {
+        ALOGI("%s\n",__FUNCTION__);
         if (mStreamOn) {
             enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
             int err = ioctl(mFd, VIDIOC_STREAMOFF, &type);

@@ -73,6 +73,14 @@ namespace android {
 
         int setupEGL();
 
+        int v4l2Init();
+
+        bool v4l2Loop();
+
+        int testInit();
+
+        bool testLoop();
+
         sp<SurfaceComposerClient> mSession;
         AssetManager mAssets;
 
