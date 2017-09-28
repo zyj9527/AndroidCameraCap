@@ -30,7 +30,7 @@ LOCAL_C_INCLUDES := \
 	external/stlport/stlport
 
 LOCAL_C_INCLUDES += \
-	$(call include-path-for, corecg graphics libstdc++)
+	$(call include-path-for, graphics libstdc++)
 
 LOCAL_NDK_STL_VARIANT := stlport_shared
 	
